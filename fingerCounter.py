@@ -15,46 +15,30 @@ ptime = 0
 fingers = [4, 8, 12, 16, 20]
 base_point = 0
 
+ptime = 0
+
 while True:
 
-    finger_num = 0
     success, img = cap.read()
 
     img = detector.findHands(img)
     lmList = detector.findPosition(img)
 
     if len(lmList) != 0:
-        basex, basey = lmList[base_point][1], lmList[base_point][2]
-
-        x1, y1 = lmList[4][1], lmList[4][2]
-        x2, y2 = lmList[8][1], lmList[8][2]
-        x3, y3 = lmList[12][1], lmList[12][2]
-        x4, y4 = lmList[16][1], lmList[16][2]
-        x5, y5 = lmList[20][1], lmList[20][2]
-
-
-        xdif1 = x2 - basex
-        xdif2 = x3 - basex
-        xdif3 = x4 - basex
-        xdif4 = x5 - basex
-        xdift = x1 - basex
-
-        #print("xdif1 = ", xdif1, ", xdif2 = ", xdif2, ", xdif3 = ", xdif3, ", xdif4 = ", xdif4, ", xdif thumb = ", xdift)
-
-        if(xdif1 > 60):
+        finger_num = 0
+        if(lmList[4][1] > lmList[4][2]):
             finger_num += 1
-        if(xdif2 > 10):
-            finger_num += 1
-        if(xdif3 > -40):
-            finger_num += 1
-        if(xdif4 > -85):
-            finger_num += 1
-        if(xdift > 100):
-            finger_num += 1
+
+        for fingerindex in range(1, 5):
+            if lmList[fingers[fingerindex]][2] < lmList[fingers[fingerindex] - 2][2]:
+                finger_num += 1
 
         print(finger_num)
 
-
+    ctime = time.time()
+    fps = 1/(ctime-ptime)
+    ptime = ctime
+    cv.putText(img, str(int(fps)), (20, 50), cv.FONT_HERSHEY_PLAIN, 3, (0, 255, 0), 3)
 
 
 
